@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
 
 const getAllUsers = (req, res) => {
@@ -31,7 +32,12 @@ const createUser = (req, res) => {
     .then((user) => {
       res.status(200).send(user);
     })
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка.' }));
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+      }
+      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
+    });
 };
 
 const updateProfile = (req, res) => {
