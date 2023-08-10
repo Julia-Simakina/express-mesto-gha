@@ -33,10 +33,11 @@ const createUser = (req, res) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        return res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка.' });
     });
 };
 
