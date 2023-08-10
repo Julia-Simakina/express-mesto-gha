@@ -57,17 +57,6 @@ const updateProfile = (req, res) => {
     .then((user) => {
       res.status(200).send(user);
     })
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка.' }));
-};
-
-const updateAvatar = (req, res) => {
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(
-    req.user._id,
-    { avatar },
-  )
-    .then((user) => res.status(200).send(user))
-
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
@@ -77,6 +66,16 @@ const updateAvatar = (req, res) => {
         res.status(500).send({ message: 'На сервере произошла ошибка.' });
       }
     });
+};
+
+const updateAvatar = (req, res) => {
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(
+    req.user._id,
+    { avatar },
+  )
+    .then((user) => res.status(200).send(user))
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка.' }));
 };
 
 module.exports = {
