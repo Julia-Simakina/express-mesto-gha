@@ -40,8 +40,17 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .then((card) => res.status(200).send(card))
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка.' }));
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'Карточка не найдена.' });
+      }
+      return res.status(200).send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: ' Переданы некорректные данные для постановки/снятии лайка.' });
+      } else { res.status(500).send({ message: 'На сервере произошла ошибка.' }); }
+    });
 };
 
 const dislikeCard = (req, res) => {
