@@ -11,8 +11,14 @@ const createCard = (req, res) => {
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
-    .then((card) => res.status(201).send(card))
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка.' }));
+    .then((card) => res.status(200).send(card))
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка.' });
+      }
+    });
 };
 
 const deleteCard = (req, res) => {
