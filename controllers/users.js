@@ -15,19 +15,19 @@ const getUserById = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
+    .orFail(new Error('NotFoundError'))
     .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'Запрашиваемый пользователь не найден.' });
-        return;
-      }
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
-      } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка.' });
-      }
+      if (err.message === 'NotFoundError') {
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден.' });
+      } else
+        if (err.name === 'CastError') {
+          res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' });
+        } else {
+          res.status(500).send({ message: 'На сервере произошла ошибка.' });
+        }
     });
 };
 
@@ -36,7 +36,7 @@ const createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => {
-      res.status(200).send(user);
+      res.status(201).send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -54,14 +54,14 @@ const updateProfile = (req, res) => {
     req.user._id,
     { name, about },
     { new: true, runValidators: true },
-  )
+  ).orFail(new Error('NotFoundError'))
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
-      } else if (err.message === 'NotFound') {
+      } else if (err.message === 'NotFoundError') {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка.' });
@@ -76,11 +76,12 @@ const updateAvatar = (req, res) => {
     { avatar },
     { new: true, runValidators: true },
   )
+    .orFail(new Error('NotFoundError'))
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
-      } else if (err.message === 'NotFound') {
+      } else if (err.message === 'NotFoundError') {
         res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
       } else {
         res.status(500).send({ message: 'На сервере произошла ошибка.' });
