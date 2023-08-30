@@ -40,7 +40,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Поле должно быть заполнено'],
     select: false, // Так по умолчанию хеш пароля пользователя не будет возвращаться из базы
-    minlength: 8,
   },
 
 }, { versionKey: false });

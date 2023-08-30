@@ -3,7 +3,7 @@ const { urlRegex } = require('../constants/urlRegex');
 
 const userIdValidation = celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().required().length(24),
+    userId: Joi.string().required().length(24).hex(),
   }),
 });
 

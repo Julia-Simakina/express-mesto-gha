@@ -18,22 +18,23 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные при добавлении карточки.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
-  Card.findByIdAndRemove(cardId)
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка не найдена.');
-      }
-      if (!card.owner.equals(req.user._id)) {
+      } else if (!card.owner.equals(req.user._id)) {
         throw new ForbiddenError('Вы не можете удалить чужую карточку.');
       }
-      return res.status(200).send(card);
+      Card.findByIdAndRemove(cardId)
+        .then((cardDelete) => res.status(200).send(cardDelete));
     })
     .catch((err) => {
       if (err.name === 'CastError') {

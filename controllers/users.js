@@ -34,8 +34,6 @@ module.exports.getUserById = (req, res, next) => {
     .orFail(new Error('NotFoundError'))
     .then((user) => {
       res.status(200).send(user);
-
-      // throw new NotFoundError('Пользователь c таким _id не найден.');
     })
     .catch((err) => {
       if (err.message === 'NotFoundError') {
@@ -91,9 +89,10 @@ module.exports.updateProfile = (req, res, next) => {
     { new: true, runValidators: true },
   ).orFail(new Error('NotFoundError'))
     .then((user) => {
-      res.status(200).send(user);
-
-      throw new NotFoundError('Пользователь c таким _id не найден.');
+      if (!user) {
+        throw new NotFoundError('Пользователь c таким _id не найден.');
+      }
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -113,8 +112,10 @@ module.exports.updateAvatar = (req, res, next) => {
   )
     .orFail(new Error('NotFoundError'))
     .then((user) => {
-      res.status(200).send(user);
-      throw new NotFoundError('Пользователь c таким _id не найден.');
+      if (!user) {
+        throw new NotFoundError('Пользователь c таким _id не найден.');
+      }
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
