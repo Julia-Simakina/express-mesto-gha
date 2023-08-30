@@ -6,7 +6,7 @@ const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { signUp } = require('./middlewares/authValidation');
 const { signIn } = require('./middlewares/authValidation');
-const { NotFoundError } = require('./errors/NotFoundError');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
