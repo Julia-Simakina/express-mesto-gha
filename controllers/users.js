@@ -31,13 +31,16 @@ module.exports.getUserById = (req, res, next) => {
   const { userId } = req.params;
 
   User.findById(userId)
+    .orFail(new Error('NotFoundError'))
     .then((user) => {
       res.status(200).send(user);
 
-      throw new NotFoundError('Пользователь c таким _id не найден.');
+      // throw new NotFoundError('Пользователь c таким _id не найден.');
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.message === 'NotFoundError') {
+        next(new NotFoundError('Пользователь c таким _id не найден.'));
+      } else if (err.name === 'CastError') {
         next(new BadRequestError('Передан некорректный _id'));
       } else {
         next(err);
