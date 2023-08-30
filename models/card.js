@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { urlRegex } = require('../middlewares/authValidation');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -10,6 +11,12 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: [true, 'Поле "link" должно быть заполнено'],
+    validate: {
+      validator(url) {
+        return urlRegex.test(url);
+      },
+      message: 'Введён некорректный адрес почты',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
