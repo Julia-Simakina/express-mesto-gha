@@ -87,7 +87,7 @@ module.exports.updateProfile = (req, res, next) => {
     req.user._id,
     { name, about },
     { new: true, runValidators: true },
-  ).orFail(new Error('NotFoundError'))
+  )
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь c таким _id не найден.');
@@ -110,7 +110,6 @@ module.exports.updateAvatar = (req, res, next) => {
     { avatar },
     { new: true, runValidators: true },
   )
-    .orFail(new Error('NotFoundError'))
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь c таким _id не найден.');
